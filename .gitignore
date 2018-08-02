@@ -1,0 +1,9 @@
+# nodejs
+node_modules
+
+# parcel
+.cache
+dist
+
+# visual studio code
+.vscode
