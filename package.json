@@ -16,6 +16,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.51",
     "@vue/component-compiler-utils": "^2.0.0",
+    "dotenv": "^6.0.0",
     "parcel-bundler": "^1.9.2",
     "typescript": "^3.0.1",
     "vue-hot-reload-api": "^2.3.0",

@@ -7,3 +7,6 @@ dist
 
 # visual studio code
 .vscode
+
+# env
+.env
