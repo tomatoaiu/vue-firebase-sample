@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ word }}
+    <input type="text" v-model="word">
     <button @click="addItems">Add Item</button>
     <button @click="getItems">Get Item</button>
     <button @click="signIn">Sign in</button>
@@ -9,7 +9,9 @@
     <br>
     {{ user }}
     <br>
-    {{ items }}
+    <ul>
+      <li v-for="(item, i) of items" :key="i">{{ item }}</li>
+    </ul>
   </div>
 </template>
 
@@ -28,6 +30,9 @@ export default Vue.extend({
       items: undefined
     }
   },
+  mounted () {
+    this.on()
+  },
   methods: {
     addItems (): void {
       dbItemsRef.push(this.word)
@@ -35,7 +40,14 @@ export default Vue.extend({
     getItems (): void {
       dbItemsRef.once('value')
       .then((snapshot) => {
-        this.items = snapshot.val()
+        const items = snapshot.val()
+        this.items = Object.values(items)
+      })
+    },
+    on (): void {
+      dbItemsRef.on('value', (snapshot) => {
+        const items = snapshot.val()
+        this.items = Object.values(items)
       })
     },
     signIn (): void {
