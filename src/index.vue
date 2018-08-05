@@ -1,16 +1,19 @@
 <template>
   <div>
-    <input type="text" v-model="word">
+    word: <input type="text" v-model="word">
     <button @click="addItems">Add Item</button>
     <button @click="getItems">Get Item</button>
     <button @click="signIn">Sign in</button>
     <button @click="signOut">Sign out</button>
     {{ sign }}
     <br>
+    id: <input type="text" v-model="setId">
+    <button @click="updateItem">Update Item</button>
+    <br>
     {{ user }}
     <br>
     <ul>
-      <li v-for="(item, i) of items" :key="i">{{ item }}</li>
+      <li v-for="(value, key, index) in items" :key="index">{{ key }} : {{ value }}</li>
     </ul>
   </div>
 </template>
@@ -26,8 +29,9 @@ export default Vue.extend({
     return {
       word: 'Hello, world',
       sign: 'Sign ?',
+      setId: '',
       user: undefined,
-      items: undefined
+      items: []
     }
   },
   mounted () {
@@ -36,6 +40,11 @@ export default Vue.extend({
   methods: {
     addItems (): void {
       dbItemsRef.push(this.word)
+    },
+    updateItem (): void {
+      dbItemsRef.update({
+        [`${this.setId}`]: this.word
+      })
     },
     getItems (): void {
       dbItemsRef.once('value')
@@ -47,7 +56,7 @@ export default Vue.extend({
     on (): void {
       dbItemsRef.on('value', (snapshot) => {
         const items = snapshot.val()
-        this.items = Object.values(items)
+        this.items = items
       })
     },
     signIn (): void {
