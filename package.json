@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel ./src/index.html",
-    "clean": "rimraf .cache dist"
+    "clean": "rimraf .cache dist",
+    "selfinit": "rm -rf node_modules; yarn clean; yarn; yarn start"
   },
   "keywords": [],
   "author": "",
