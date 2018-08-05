@@ -10,3 +10,6 @@ dist
 
 # env
 .env
+
+# yarn
+yarn-error.log
