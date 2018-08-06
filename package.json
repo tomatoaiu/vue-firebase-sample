@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel ./src/index.html",
-    "clean": "rimraf .cache dist",
-    "selfinit": "rm -rf node_modules; yarn clean; yarn; yarn start"
+    "selfinit": "rm -rf node_modules .cache dist; yarn; yarn start"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +20,6 @@
     "@babel/core": "^7.0.0-beta.51",
     "@vue/component-compiler-utils": "^2.0.0",
     "parcel-bundler": "^1.9.2",
-    "rimraf": "^2.6.2",
     "typescript": "^3.0.1",
     "vue-hot-reload-api": "^2.3.0",
     "vue-template-compiler": "^2.5.16"
