@@ -9,6 +9,7 @@
     <br>
     id: <input type="text" v-model="setId">
     <button @click="updateItem">Update Item</button>
+    <button @click="removeItem">Remove Item</button>
     <br>
     {{ user }}
     <br>
@@ -51,6 +52,11 @@ export default Vue.extend({
       .then((snapshot) => {
         const items = snapshot.val()
         this.items = Object.values(items)
+      })
+    },
+    removeItem (): void {
+      dbItemsRef.update({
+        [`${this.setId}`]: null
       })
     },
     on (): void {
