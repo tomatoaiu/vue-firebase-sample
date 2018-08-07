@@ -23,4 +23,4 @@ const config = {
 
 const firebaseApp = firebase.initializeApp(config)
 const db = firebaseApp.database()
-export const dbItemsRef = db.ref('items')
+export const dbItemsRef = db.ref('user-data')

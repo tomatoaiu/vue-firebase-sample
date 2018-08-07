@@ -8,14 +8,17 @@
     {{ sign }}
     <br>
     id: <input type="text" v-model="setId">
+    name: <input type="text" v-model="name">
+    <button @click="setItem">Set Item</button>
     <button @click="updateItem">Update Item</button>
     <button @click="removeItem">Remove Item</button>
-    <br>
-    {{ user }}
+    <button @click="on">On</button>
     <br>
     <ul>
       <li v-for="(value, key, index) in items" :key="index">{{ key }} : {{ value }}</li>
     </ul>
+    <br>
+    {{ user }}
   </div>
 </template>
 
@@ -29,6 +32,7 @@ export default Vue.extend({
   data () {
     return {
       word: 'Hello, world',
+      name: '',
       sign: 'Sign ?',
       setId: '',
       user: undefined,
@@ -38,9 +42,14 @@ export default Vue.extend({
   mounted () {
     this.on()
   },
+  watch: {
+    user (next) {
+      this.on()
+    }
+  },
   methods: {
     addItems (): void {
-      dbItemsRef.push(this.word)
+      dbItemsRef.child(`${this.user.uid}/words`).push(this.word)
     },
     updateItem (): void {
       dbItemsRef.update({
@@ -48,10 +57,17 @@ export default Vue.extend({
       })
     },
     getItems (): void {
-      dbItemsRef.once('value')
+      dbItemsRef.child(`${this.user.uid}/words`).once('value')
       .then((snapshot) => {
         const items = snapshot.val()
         this.items = Object.values(items)
+      })
+    },
+    setItem (): void {
+      dbItemsRef.set({
+        [`${this.setId}`]: {
+          name: this.name
+        }
       })
     },
     removeItem (): void {
@@ -60,17 +76,26 @@ export default Vue.extend({
       })
     },
     on (): void {
-      dbItemsRef.on('value', (snapshot) => {
-        const items = snapshot.val()
-        this.items = items
-      })
+      if (this.user) {
+          dbItemsRef.child(`${this.user.uid}/words`).on('value', (snapshot) => {
+          const items = snapshot.val()
+          console.log(items)
+          this.items = items
+        })
+      }
     },
     signIn (): void {
       const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider).then((result) => {
         this.user = result.user
+        dbItemsRef.set({
+          [`${this.user}`]: {
+            name: this.displayName,
+            words: []
+          }
+        })
+        this.sign = 'Sign in'
       })
-      this.sign = 'Sign in'
     },
     signOut (): void {
       firebase.auth().signOut().then(() => {
