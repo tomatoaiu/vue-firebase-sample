@@ -14,11 +14,13 @@
     <button @click="removeItem">Remove Item</button>
     <button @click="on">On</button>
     <br>
+    {{ displayName || '' }} :||: {{ email || '' }} :||: <img :src="photoURL || ''" alt="" height="50px" width="50px"><br>
+    <br>
     <ul>
       <li v-for="(value, key, index) in items" :key="index">{{ key }} : {{ value }}</li>
     </ul>
     <br>
-    {{ user }}
+    <!-- {{ user }} -->
   </div>
 </template>
 
@@ -36,6 +38,9 @@ export default Vue.extend({
       sign: 'Sign ?',
       setId: '',
       user: undefined,
+      displayName: '',
+      email: '',
+      photoURL: '',
       items: []
     }
   },
@@ -79,7 +84,6 @@ export default Vue.extend({
       if (this.user) {
           dbItemsRef.child(`${this.user.uid}/words`).on('value', (snapshot) => {
           const items = snapshot.val()
-          console.log(items)
           this.items = items
         })
       }
@@ -88,12 +92,10 @@ export default Vue.extend({
       const provider = new firebase.auth.GoogleAuthProvider()
       firebase.auth().signInWithPopup(provider).then((result) => {
         this.user = result.user
-        dbItemsRef.set({
-          [`${this.user}`]: {
-            name: this.displayName,
-            words: []
-          }
-        })
+        this.displayName = this.user.displayName
+        this.email = this.user.email
+        this.photoURL = this.user.photoURL
+        this.on()
         this.sign = 'Sign in'
       })
     },
@@ -107,3 +109,10 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style scoped>
+img {
+  border-radius: 10px;
+}
+</style>
+
