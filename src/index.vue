@@ -27,7 +27,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import firebase from 'firebase'
-import { dbItemsRef } from './firebaseConfig'
+import { firebaseApps, db, auth } from './firebaseConfig'
+const dbItemsRef = db.ref('user-data')
 
 export default Vue.extend({
   name: 'App',
@@ -90,7 +91,7 @@ export default Vue.extend({
     },
     signIn (): void {
       const provider = new firebase.auth.GoogleAuthProvider()
-      firebase.auth().signInWithPopup(provider).then((result) => {
+      auth.signInWithPopup(provider).then((result) => {
         this.user = result.user
         this.displayName = this.user.displayName
         this.email = this.user.email
@@ -100,7 +101,7 @@ export default Vue.extend({
       })
     },
     signOut (): void {
-      firebase.auth().signOut().then(() => {
+      auth.signOut().then(() => {
         this.sign = 'Sign out'
       }).catch((error) => {
         // An error happened.

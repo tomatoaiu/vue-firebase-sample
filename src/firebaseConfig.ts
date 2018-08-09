@@ -1,4 +1,6 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/database'
 
 declare const process: {
   env: {
@@ -21,6 +23,12 @@ const config = {
   messagingSenderId: process.env.MESSAGINGSENDERID
 }
 
-const firebaseApp = firebase.initializeApp(config)
-const db = firebaseApp.database()
-export const dbItemsRef = db.ref('user-data')
+const firebaseApps = !firebase.apps.length ? firebase.initializeApp(config) : firebase.app()
+const db = firebaseApps.database()
+const auth = firebaseApps.auth();
+
+export {
+  firebaseApps,
+  db,
+  auth
+}
