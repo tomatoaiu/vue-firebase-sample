@@ -58,7 +58,7 @@ export default Vue.extend({
       dbItemsRef.child(`${this.user.uid}/words`).push(this.word)
     },
     updateItem (): void {
-      dbItemsRef.update({
+      dbItemsRef.child(`${this.user.uid}/words`).update({
         [`${this.setId}`]: this.word
       })
     },
