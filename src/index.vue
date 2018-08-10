@@ -17,7 +17,12 @@
     {{ displayName || '' }} :||: {{ email || '' }} :||: <img :src="photoURL || ''" alt="" height="50px" width="50px"><br>
     <br>
     <ul>
+      <li>on value</li>
       <li v-for="(value, key, index) in items" :key="index">{{ key }} : {{ value }}</li>
+    </ul>
+    <ul>
+      <li>on child_add</li>
+      <li v-for="(value, key, index) in childAddedItems" :key="index">{{ key }} : {{ value }}</li>
     </ul>
     <br>
     <!-- {{ user }} -->
@@ -30,19 +35,22 @@ import firebase from 'firebase'
 import { firebaseApps, db, auth } from './firebaseConfig'
 const dbItemsRef = db.ref('user-data')
 
+interface StringMap { [key: string]: string }
+
 export default Vue.extend({
   name: 'App',
   data () {
     return {
-      word: 'Hello, world',
-      name: '',
-      sign: 'Sign ?',
-      setId: '',
-      user: undefined,
-      displayName: '',
-      email: '',
-      photoURL: '',
-      items: []
+      word: <string> 'Hello, world',
+      name: <string> '',
+      sign: <string> 'Sign ?',
+      setId: <string> '',
+      user: <Object> undefined,
+      displayName: <string> '',
+      email: <string> '',
+      photoURL: <string> '',
+      items: <StringMap[]> [],
+      childAddedItems: <StringMap[]> []
     }
   },
   mounted () {
@@ -89,6 +97,15 @@ export default Vue.extend({
         })
       }
     },
+    childAdded (): void {
+      if (this.user) {
+        dbItemsRef.child(`${this.user.uid}/words`).on('child_added', (data) => {
+          (<StringMap[]> this.childAddedItems).push({
+            [`${data.key}`]: data.val()
+          })
+        })
+      }
+    },
     signIn (): void {
       const provider = new firebase.auth.GoogleAuthProvider()
       auth.signInWithPopup(provider).then((result) => {
@@ -97,6 +114,7 @@ export default Vue.extend({
         this.email = this.user.email
         this.photoURL = this.user.photoURL
         this.on()
+        this.childAdded()
         this.sign = 'Sign in'
       })
     },
