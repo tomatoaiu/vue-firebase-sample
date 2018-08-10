@@ -45,7 +45,7 @@ export default Vue.extend({
       name: <string> '',
       sign: <string> 'Sign ?',
       setId: <string> '',
-      user: <Object> undefined,
+      user: <firebase.User> {},
       displayName: <string> '',
       email: <string> '',
       photoURL: <string> '',
@@ -92,7 +92,7 @@ export default Vue.extend({
     on (): void {
       if (this.user) {
           dbItemsRef.child(`${this.user.uid}/words`).on('value', (snapshot) => {
-          const items = snapshot.val()
+          const items = snapshot!.val()
           this.items = items
         })
       }
@@ -100,8 +100,8 @@ export default Vue.extend({
     childAdded (): void {
       if (this.user) {
         dbItemsRef.child(`${this.user.uid}/words`).on('child_added', (data) => {
-          (<StringMap[]> this.childAddedItems).push({
-            [`${data.key}`]: data.val()
+          this.childAddedItems.push({
+            [`${data!.key}`]: data!.val()
           })
         })
       }
@@ -109,10 +109,10 @@ export default Vue.extend({
     signIn (): void {
       const provider = new firebase.auth.GoogleAuthProvider()
       auth.signInWithPopup(provider).then((result) => {
-        this.user = result.user
-        this.displayName = this.user.displayName
-        this.email = this.user.email
-        this.photoURL = this.user.photoURL
+        this.user = result.user!
+        this.displayName = this.user.displayName!
+        this.email = this.user.email!
+        this.photoURL = this.user.photoURL!
         this.on()
         this.childAdded()
         this.sign = 'Sign in'

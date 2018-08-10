@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "node_modules",
+    ".cache",
+    "dist"
+  ],
+  "compileOnSave": false
+}
