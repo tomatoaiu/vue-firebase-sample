@@ -49,21 +49,48 @@ export default Vue.extend({
       displayName: <string> '',
       email: <string> '',
       photoURL: <string> '',
-      items: <StringMap[]> [],
-      childAddedItems: <StringMap[]> []
+      items: [],
+      childAddedItems: <StringMap[]> [],
+      localTime: new Date()
     }
   },
-  mounted () {
-    this.on()
+  async mounted () {
+    this.items = this.getLocalStorage()
+    this.localTime = this.getLocalTimeStamp()
+    console.log(this.items, this.localTime)
   },
   watch: {
-    user (next) {
-      this.on()
+    async user (next) {
     }
   },
   methods: {
+    getLocalTimeStamp () {
+      if ('timestamp' in localStorage) {
+        return JSON.parse(localStorage.getItem('timestamp')!)
+      } else {
+        return ''
+      }
+    },
+    getLocalStorage () {
+      if ('words' in localStorage) {
+        return JSON.parse(localStorage.getItem('words')!)
+      } else {
+        return []
+      }
+    },
+    setLocalStorage (): void {
+      localStorage.setItem('words', JSON.stringify(this.items))
+      localStorage.setItem('timestamp', JSON.stringify(new Date()))
+    },
     addItems (): void {
-      dbItemsRef.child(`${this.user.uid}/words`).push(this.word)
+      this.items.push(this.word)
+      this.setLocalStorage()
+      if (this.user && 'uid' in this.user) {
+        dbItemsRef.child(`${this.user.uid}/words`).push(this.word)
+        dbItemsRef.child(`${this.user.uid}`).update({
+          timestamp: new Date()
+        })
+      }
     },
     updateItem (): void {
       dbItemsRef.child(`${this.user.uid}/words`).update({
@@ -77,15 +104,27 @@ export default Vue.extend({
         this.items = Object.values(items)
       })
     },
+    getRemoteTimeStamp () {
+      return dbItemsRef.child(`${this.user.uid}/timestamp`).once('value')
+      .then((snapshot) => {
+        return snapshot.val()
+      })
+    },
+    setItems (items: Array<String>) {
+      dbItemsRef.child(`${this.user.uid}`).set({
+        timestamp: new Date(),
+        words: items
+      })
+    },
     setItem (): void {
-      dbItemsRef.set({
+      dbItemsRef.child(`${this.user.uid}/words`).set({
         [`${this.setId}`]: {
           name: this.name
         }
       })
     },
     removeItem (): void {
-      dbItemsRef.update({
+      dbItemsRef.child(`${this.user.uid}/words`).update({
         [`${this.setId}`]: null
       })
     },
@@ -106,16 +145,32 @@ export default Vue.extend({
         })
       }
     },
-    signIn (): void {
+    async signIn () {
       const provider = new firebase.auth.GoogleAuthProvider()
       auth.signInWithPopup(provider).then((result) => {
         this.user = result.user!
         this.displayName = this.user.displayName!
         this.email = this.user.email!
         this.photoURL = this.user.photoURL!
-        this.on()
-        this.childAdded()
+        // this.childAdded()
         this.sign = 'Sign in'
+        
+        dbItemsRef.child(`${this.user.uid}/timestamp`).once('value')
+        .then((snapshot) => {
+          const remoteTime = snapshot.val()
+          console.log(this.localTime, remoteTime, !remoteTime || this.localTime > remoteTime)
+          if (!remoteTime || new Date(this.localTime) > new Date(remoteTime)) {
+            const items = this.getLocalStorage()
+            this.setItems(items)
+            this.on()
+          } else {
+            this.on()
+          }
+        }).catch((err) => {
+          console.log(err)
+        })
+
+        
       })
     },
     signOut (): void {
