@@ -49,7 +49,7 @@ export default Vue.extend({
       displayName: <string> '',
       email: <string> '',
       photoURL: <string> '',
-      items: [],
+      items: <string[]> [],
       childAddedItems: <StringMap[]> [],
       localTime: new Date()
     }
@@ -58,10 +58,6 @@ export default Vue.extend({
     this.items = this.getLocalStorage()
     this.localTime = this.getLocalTimeStamp()
     console.log(this.items, this.localTime)
-  },
-  watch: {
-    async user (next) {
-    }
   },
   methods: {
     getLocalTimeStamp () {
