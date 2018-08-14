@@ -60,14 +60,14 @@ export default Vue.extend({
     console.log(this.items, this.localTime)
   },
   methods: {
-    getLocalTimeStamp () {
+    getLocalTimeStamp (): string {
       if ('timestamp' in localStorage) {
-        return JSON.parse(localStorage.getItem('timestamp')!)
+        return String(JSON.parse(localStorage.getItem('timestamp')!))
       } else {
         return ''
       }
     },
-    getLocalStorage () {
+    getLocalStorage (): string[] {
       if ('words' in localStorage) {
         return JSON.parse(localStorage.getItem('words')!)
       } else {
