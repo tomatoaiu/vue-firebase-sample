@@ -51,7 +51,7 @@ export default Vue.extend({
       photoURL: <string> '',
       items: <string[]> [],
       childAddedItems: <StringMap[]> [],
-      localTime: new Date()
+      localTime: <string> ''
     }
   },
   async mounted () {
